@@ -11,8 +11,13 @@ public interface FlickrService {
 
 
     @GET("?method=flickr.photos.getRecent&api_key=90d35997e8f0f3686e8aaef1260a3008" +
-            "&per_page=20&page=1&format=json&nojsoncallback=1")
-    Call<ResponsePhotos> getResponse();
+            "&format=json&nojsoncallback=1")
+    Call<ResponsePhotos> getResponse(
+
+            @Query("per_page") int per_page,
+            @Query("page") int page
+
+    );
 
 
 

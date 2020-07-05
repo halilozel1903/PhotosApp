@@ -1,6 +1,7 @@
-package com.halil.ozel.photosapp.adapter;
+package com.halil.ozel.photosapp.ui.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import com.halil.ozel.photosapp.api.FlickrApi;
 import com.halil.ozel.photosapp.api.FlickrService;
 import com.halil.ozel.photosapp.data.Photo;
 import com.halil.ozel.photosapp.data.ResponsePhoto;
+import com.halil.ozel.photosapp.ui.activity.PhotosDetailActivity;
 
 import java.util.List;
 
@@ -62,12 +64,28 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.PhotosHold
 
                    //https://farm66.staticflickr.com/65535/50079652836_4095c95086.jpg
 
-                     String id = response.body().getPhoto().getId();
+                     final String id = response.body().getPhoto().getId();
                      String secret = response.body().getPhoto().getSecret();
                      String server = response.body().getPhoto().getServer();
                      int farm = response.body().getPhoto().getFarm();
 
-                    Glide.with(context).load("https://farm"+farm+".staticflickr.com/"+server+"/"+id+"_"+secret+".jpg").into(holder.ivPhoto);
+                    final String url = "https://farm"+farm+".staticflickr.com/"+server+"/"+id+"_"+secret+".jpg";
+
+                    Glide.with(context).load(url).into(holder.ivPhoto);
+
+
+
+                    holder.itemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            Intent intent = new Intent(view.getContext(), PhotosDetailActivity.class);
+
+                            intent.putExtra("posterUrl",url);
+
+                            view.getContext().startActivity(intent);
+                        }
+                    });
 
 
                 }
@@ -91,6 +109,7 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.PhotosHold
     }
 
     public class PhotosHolder extends RecyclerView.ViewHolder {
+
         ImageView ivPhoto;
 
 
@@ -99,5 +118,16 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.PhotosHold
 
             ivPhoto = view.findViewById(R.id.ivPhoto);
         }
+    }
+
+    public void uploadImages(List<Photo> photos){
+
+
+        for(Photo photo : photos){
+
+            photoList.add(photo);
+        }
+
+        notifyDataSetChanged();
     }
 }
