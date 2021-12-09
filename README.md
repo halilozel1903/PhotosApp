@@ -1,10 +1,10 @@
-# Photos App
+# Photos 🖼 App 📱
 
 ![Screenshot](https://github.com/halilozel1903/PhotosApp/blob/master/flickr.jpg)
 
 This is an application developed using the Flickr API.
 
-You can review the document.
+You can review the document. 📝
 
 https://www.flickr.com/services/developer/api/
 
@@ -18,18 +18,18 @@ This API takes pictures on the Home Page : https://www.flickr.com/services/api/e
 
 <br>
 
-## App Screenshots
+## App Screenshots 📸
 
 <img src="https://github.com/halilozel1903/PhotosApp/blob/master/home.jpeg" width="350" /> <img src="https://github.com/halilozel1903/PhotosApp/blob/master/home1.jpeg" width="350" />
 
 <img src="https://github.com/halilozel1903/PhotosApp/blob/master/detail.jpeg" width="350" /> <img src="https://github.com/halilozel1903/PhotosApp/blob/master/detail1.jpeg" width="350" />  
 
 
-## License
+## License ℹ️
 ```
 MIT License
 
-Copyright (c) 2020 Halil Özel
+Copyright (c) 2021 Halil OZEL
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
