@@ -12,11 +12,10 @@ I show the last pictures that people have uploaded on the screen. 20 images are 
 
 Clicking on the pictures opens the detail page. The pictures on the detail page are shown in their actual size.
 
-API used in Home Page : https://www.flickr.com/services/api/explore/flickr.photos.getRecent
+API used in Home Page: https://www.flickr.com/services/api/explore/flickr.photos.getRecent
 
-This API takes pictures on the Home Page : https://www.flickr.com/services/api/explore/flickr.photos.getInfo
+This API takes pictures on the Home Page: https://www.flickr.com/services/api/explore/flickr.photos.getInfo
 
-<br>
 
 ## App Screenshots 📸
 
@@ -29,7 +28,7 @@ This API takes pictures on the Home Page : https://www.flickr.com/services/api/e
 ```
 MIT License
 
-Copyright (c) 2021 Halil OZEL
+Copyright (c) 2022 Halil OZEL
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
