@@ -64,14 +64,15 @@ public class PhotosActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ResponsePhotos> call, Response<ResponsePhotos> response) {
 
-                List<Photo> photoList = response.body().getPhotos().getPhoto();
+                List<Photo> photoList;
+                if (response.body() != null) {
+                    photoList = response.body().getPhotos().getPhoto();
+                    photosAdapter = new PhotosAdapter(photoList, getApplicationContext());
 
-                photosAdapter = new PhotosAdapter(photoList, getApplicationContext());
+                    rvPhotos.setAdapter(photosAdapter);
 
-                rvPhotos.setAdapter(photosAdapter);
-
-                pbPhoto.setVisibility(View.GONE);
-
+                    pbPhoto.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -127,11 +128,14 @@ public class PhotosActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ResponsePhotos> call, Response<ResponsePhotos> response) {
 
-                List<Photo> photoList = response.body().getPhotos().getPhoto();
+                List<Photo> photoList;
+                if (response.body() != null) {
+                    photoList = response.body().getPhotos().getPhoto();
+                    photosAdapter.uploadImages(photoList);
+                    pbPhoto.setVisibility(View.GONE);
+                }
 
-                photosAdapter.uploadImages(photoList);
 
-                pbPhoto.setVisibility(View.GONE);
 
             }
 
