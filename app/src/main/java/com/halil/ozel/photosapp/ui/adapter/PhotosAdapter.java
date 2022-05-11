@@ -1,5 +1,6 @@
 package com.halil.ozel.photosapp.ui.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -26,9 +27,8 @@ import retrofit2.Response;
 
 public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.PhotosHolder> {
 
-    private List<Photo> photoList;
-    private Context context;
-
+    private final List<Photo> photoList;
+    private final Context context;
 
     public PhotosAdapter(List<Photo> photoList, Context context) {
         this.photoList = photoList;
@@ -58,49 +58,31 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.PhotosHold
             @Override
             public void onResponse(Call<ResponsePhoto> call, Response<ResponsePhoto> response) {
 
-
                 if (response.body() != null) {
+                    //https://farm66.staticflickr.com/65535/50079652836_4095c95086.jpg
 
+                    final String id = response.body().getPhoto().getId();
+                    String secret = response.body().getPhoto().getSecret();
+                    String server = response.body().getPhoto().getServer();
+                    int farm = response.body().getPhoto().getFarm();
 
-                   //https://farm66.staticflickr.com/65535/50079652836_4095c95086.jpg
-
-                     final String id = response.body().getPhoto().getId();
-                     String secret = response.body().getPhoto().getSecret();
-                     String server = response.body().getPhoto().getServer();
-                     int farm = response.body().getPhoto().getFarm();
-
-                    final String url = "https://farm"+farm+".staticflickr.com/"+server+"/"+id+"_"+secret+".jpg";
+                    final String url = "https://farm" + farm + ".staticflickr.com/" + server + "/" + id + "_" + secret + ".jpg";
 
                     Glide.with(context).load(url).into(holder.ivPhoto);
 
+                    holder.itemView.setOnClickListener(view -> {
 
-
-                    holder.itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-
-                            Intent intent = new Intent(view.getContext(), PhotosDetailActivity.class);
-
-                            intent.putExtra("posterUrl",url);
-
-                            view.getContext().startActivity(intent);
-                        }
+                        Intent intent = new Intent(view.getContext(), PhotosDetailActivity.class);
+                        intent.putExtra("posterUrl", url);
+                        view.getContext().startActivity(intent);
                     });
-
-
                 }
-
-
             }
 
             @Override
             public void onFailure(Call<ResponsePhoto> call, Throwable t) {
-
             }
         });
-
-
-
     }
 
     @Override
@@ -108,26 +90,18 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.PhotosHold
         return photoList.size();
     }
 
-    public class PhotosHolder extends RecyclerView.ViewHolder {
-
+    public static class PhotosHolder extends RecyclerView.ViewHolder {
         ImageView ivPhoto;
-
 
         public PhotosHolder(View view) {
             super(view);
-
             ivPhoto = view.findViewById(R.id.ivPhoto);
         }
     }
 
-    public void uploadImages(List<Photo> photos){
-
-
-        for(Photo photo : photos){
-
-            photoList.add(photo);
-        }
-
+    @SuppressLint("NotifyDataSetChanged")
+    public void uploadImages(List<Photo> photos) {
+        photoList.addAll(photos);
         notifyDataSetChanged();
     }
 }

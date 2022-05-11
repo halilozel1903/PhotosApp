@@ -13,7 +13,6 @@ public interface FlickrService {
     @GET("?method=flickr.photos.getRecent&api_key=5adbb887ee60c548c02690ef16b848cd" +
             "&format=json&nojsoncallback=1")
     Call<ResponsePhotos> getResponse(
-
             @Query("per_page") int per_page,
             @Query("page") int page
 
@@ -24,7 +23,6 @@ public interface FlickrService {
             "&api_key=5adbb887ee60c548c02690ef16b848cd" + "" +
             "&format=json&nojsoncallback=1")
     Call<ResponsePhoto> getPhotoInfo(
-
             @Query("photo_id") String photo_id
     );
 }

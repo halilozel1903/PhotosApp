@@ -24,8 +24,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class PhotosActivity extends AppCompatActivity {
-
-
     PhotosAdapter photosAdapter;
     RecyclerView rvPhotos;
     ProgressBar pbPhoto;
@@ -57,7 +55,6 @@ public class PhotosActivity extends AppCompatActivity {
         call.enqueue(new Callback<ResponsePhotos>() {
             @Override
             public void onResponse(Call<ResponsePhotos> call, Response<ResponsePhotos> response) {
-
                 List<Photo> photoList;
                 if (response.body() != null) {
                     photoList = response.body().getPhotos().getPhoto();
@@ -79,7 +76,6 @@ public class PhotosActivity extends AppCompatActivity {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-
                 visibleItemCount = gridLayoutManager.getChildCount();
                 totalItemCount = gridLayoutManager.getItemCount();
                 pastVisibleItems = gridLayoutManager.findFirstVisibleItemPosition();
