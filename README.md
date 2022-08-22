@@ -2,13 +2,13 @@
 
 ![Screenshot](https://github.com/halilozel1903/PhotosApp/blob/master/flickr.jpg)
 
-This is an application developed using the Flickr API.
+This is an application developed using the `Flickr` API.
 
 You can review the document. 📝
 
 https://www.flickr.com/services/developer/api/
 
-I show the last pictures that people have uploaded on the screen. 20 images are uploaded per request. Service request is made as you go down.
+I show the last pictures that people have uploaded on the screen. `20` images are uploaded per request. Service request is made as you go down.
 
 Clicking on the pictures opens the detail page. The pictures on the detail page are shown in their actual size.
 
