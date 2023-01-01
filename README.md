@@ -28,7 +28,7 @@ This API takes pictures on the Home Page: https://www.flickr.com/services/api/ex
 ```
 MIT License
 
-Copyright (c) 2022 Halil OZEL
+Copyright (c) 2023 Halil OZEL
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
