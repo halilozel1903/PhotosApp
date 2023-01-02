@@ -9,7 +9,6 @@ import retrofit2.http.Query;
 
 public interface FlickrService {
 
-
     @GET("?method=flickr.photos.getRecent&api_key=5adbb887ee60c548c02690ef16b848cd" +
             "&format=json&nojsoncallback=1")
     Call<ResponsePhotos> getResponse(
