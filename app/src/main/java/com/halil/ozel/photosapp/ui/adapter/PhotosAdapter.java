@@ -38,17 +38,14 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.PhotosHold
     @NonNull
     @Override
     public PhotosHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_photo, parent, false);
         return new PhotosHolder(view);
-
     }
 
     @Override
     public void onBindViewHolder(@NonNull final PhotosHolder holder, int position) {
 
         Photo photo = photoList.get(position);
-
 
         FlickrService flickrService = FlickrApi.getRetrofitInstance().create(FlickrService.class);
 
@@ -80,8 +77,7 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.PhotosHold
             }
 
             @Override
-            public void onFailure(Call<ResponsePhoto> call, Throwable t) {
-            }
+            public void onFailure(Call<ResponsePhoto> call, Throwable t) {}
         });
     }
 
