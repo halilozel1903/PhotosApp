@@ -16,13 +16,15 @@ API used in Home Page: https://www.flickr.com/services/api/explore/flickr.photos
 
 This API takes pictures on the Home Page: https://www.flickr.com/services/api/explore/flickr.photos.getInfo
 
-
 ## App Screenshots 📸
 
 <img src="https://github.com/halilozel1903/PhotosApp/blob/master/home.jpeg" width="350" /> <img src="https://github.com/halilozel1903/PhotosApp/blob/master/home1.jpeg" width="350" />
 
 <img src="https://github.com/halilozel1903/PhotosApp/blob/master/detail.jpeg" width="350" /> <img src="https://github.com/halilozel1903/PhotosApp/blob/master/detail1.jpeg" width="350" />  
 
+If this project help 💁 you to develop, you can give me a cup of coffee. ☕
+
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/halilozel1903)
 
 ## License ℹ️
 ```
