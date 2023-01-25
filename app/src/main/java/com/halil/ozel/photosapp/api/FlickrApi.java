@@ -4,7 +4,6 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class FlickrApi {
-
     private static Retrofit retrofit;
     private static final String BASE_URL = "https://www.flickr.com/services/rest/";
 
