@@ -46,9 +46,7 @@ public class PhotosActivity extends AppCompatActivity {
         rvPhotos.setHasFixedSize(true);
         rvPhotos.setLayoutManager(gridLayoutManager);
 
-        flickrService =
-                FlickrApi.getRetrofitInstance().create(FlickrService.class);
-
+        flickrService = FlickrApi.getRetrofitInstance().create(FlickrService.class);
         pbPhoto.setVisibility(View.VISIBLE);
 
         Call<ResponsePhotos> call = flickrService.getResponse(20, pageNumber);
@@ -115,7 +113,6 @@ public class PhotosActivity extends AppCompatActivity {
                     pbPhoto.setVisibility(View.GONE);
                 }
             }
-
             @Override
             public void onFailure(Call<ResponsePhotos> call, Throwable t) {
                 Log.d("Error", t.getMessage());

@@ -75,7 +75,6 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.PhotosHold
                     });
                 }
             }
-
             @Override
             public void onFailure(Call<ResponsePhoto> call, Throwable t) {}
         });
