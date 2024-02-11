@@ -9,10 +9,10 @@
 
     <ProgressBar
         android:id="@+id/pbPhoto"
-        android:visibility="gone"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_gravity="center"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/rvPhotos"
         app:layout_constraintHorizontal_bias="0.498"
