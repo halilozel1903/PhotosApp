@@ -3,20 +3,27 @@ package com.halil.ozel.photosapp.ui.activity;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
-import com.halil.ozel.photosapp.R;
+import com.halil.ozel.photosapp.databinding.ActivityPhotosDetailBinding;
+import com.halil.ozel.photosapp.utils.Constants;
+import com.halil.ozel.photosapp.utils.ImageLoader;
 
 public class PhotosDetailActivity extends AppCompatActivity {
-    ImageView ivPhotoDetail;
+    private ActivityPhotosDetailBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_photos_detail);
-        ivPhotoDetail = findViewById(R.id.ivPhotoDetail);
-        String posterUrl = getIntent().getStringExtra("posterUrl");
-        Glide.with(this).load(posterUrl).into(ivPhotoDetail);
+        binding = ActivityPhotosDetailBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+        String posterUrl = getIntent().getStringExtra(Constants.EXTRA_POSTER_URL);
+        ImageLoader.loadDetailImage(binding.ivPhotoDetail, posterUrl);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        binding = null;
     }
 }
