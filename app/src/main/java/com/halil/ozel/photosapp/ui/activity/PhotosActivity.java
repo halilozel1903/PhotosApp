@@ -1,79 +1,80 @@
 package com.halil.ozel.photosapp.ui.activity;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.halil.ozel.photosapp.R;
+import com.halil.ozel.photosapp.databinding.ActivityPhotosBinding;
 import com.halil.ozel.photosapp.ui.adapter.PhotosAdapter;
-import com.halil.ozel.photosapp.api.FlickrApi;
-import com.halil.ozel.photosapp.api.FlickrService;
-import com.halil.ozel.photosapp.data.Photo;
-import com.halil.ozel.photosapp.data.ResponsePhotos;
+import com.halil.ozel.photosapp.utils.Constants;
+import com.halil.ozel.photosapp.viewmodel.PhotoViewModel;
 
-import java.util.List;
+public class PhotosActivity extends AppCompatActivity implements PhotosAdapter.OnPhotoClickListener {
+    private ActivityPhotosBinding binding;
+    private PhotosAdapter photosAdapter;
+    private PhotoViewModel viewModel;
+    private GridLayoutManager gridLayoutManager;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-public class PhotosActivity extends AppCompatActivity {
-    PhotosAdapter photosAdapter;
-    RecyclerView rvPhotos;
-    ProgressBar pbPhoto;
-    GridLayoutManager gridLayoutManager;
-    FlickrService flickrService;
-
-    Boolean isLoading = true;
-    int pastVisibleItems, visibleItemCount, totalItemCount, previousTotal = 0;
-    int viewThreshold = 20;
-    int pageNumber = 1;
+    private boolean isLoading = false;
+    private int pastVisibleItems, visibleItemCount, totalItemCount, previousTotal = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_photos);
-        pbPhoto = findViewById(R.id.pbPhoto);
-        rvPhotos = findViewById(R.id.rvPhotos);
+        binding = ActivityPhotosBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        gridLayoutManager = new GridLayoutManager(this, 2);
-        rvPhotos.setHasFixedSize(true);
-        rvPhotos.setLayoutManager(gridLayoutManager);
+        setupRecyclerView();
+        setupViewModel();
+        setupScrollListener();
+    }
 
-        flickrService = FlickrApi.getRetrofitInstance().create(FlickrService.class);
-        pbPhoto.setVisibility(View.VISIBLE);
+    private void setupRecyclerView() {
+        gridLayoutManager = new GridLayoutManager(this, Constants.GRID_COLUMNS);
+        binding.rvPhotos.setHasFixedSize(true);
+        binding.rvPhotos.setLayoutManager(gridLayoutManager);
 
-        Call<ResponsePhotos> call = flickrService.getResponse(20, pageNumber);
-        call.enqueue(new Callback<ResponsePhotos>() {
-            @Override
-            public void onResponse(Call<ResponsePhotos> call, Response<ResponsePhotos> response) {
-                List<Photo> photoList;
-                if (response.body() != null) {
-                    photoList = response.body().getPhotos().getPhoto();
-                    photosAdapter = new PhotosAdapter(photoList, getApplicationContext());
-                    rvPhotos.setAdapter(photosAdapter);
-                    pbPhoto.setVisibility(View.GONE);
-                }
-            }
+        photosAdapter = new PhotosAdapter(this, this);
+        binding.rvPhotos.setAdapter(photosAdapter);
+    }
 
-            @Override
-            public void onFailure(Call<ResponsePhotos> call, Throwable t) {
-                Log.d("Error", t.getMessage());
+    private void setupViewModel() {
+        viewModel = new ViewModelProvider(this).get(PhotoViewModel.class);
+
+        // Observe photos
+        viewModel.getPhotos().observe(this, photos -> {
+            if (photos != null && !photos.isEmpty()) {
+                photosAdapter.submitList(photos);
             }
         });
 
+        // Observe loading state
+        viewModel.getLoading().observe(this, loading -> {
+            if (loading != null) {
+                binding.pbPhoto.setVisibility(loading ? View.VISIBLE : View.GONE);
+                isLoading = loading;
+            }
+        });
 
-        // scrolling and new photos upload
-        rvPhotos.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        // Observe errors
+        viewModel.getError().observe(this, error -> {
+            if (error != null) {
+                // You can show a toast or snackbar here
+            }
+        });
+    }
+
+    private void setupScrollListener() {
+        binding.rvPhotos.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
+
                 visibleItemCount = gridLayoutManager.getChildCount();
                 totalItemCount = gridLayoutManager.getItemCount();
                 pastVisibleItems = gridLayoutManager.findFirstVisibleItemPosition();
@@ -86,37 +87,27 @@ public class PhotosActivity extends AppCompatActivity {
                         }
                     }
 
-                    if (!isLoading && (totalItemCount - visibleItemCount) <= (pastVisibleItems + viewThreshold)) {
-                        pageNumber++;
-                        performPagination();
+                    if (!isLoading && (totalItemCount - visibleItemCount) <= (pastVisibleItems + Constants.VIEW_THRESHOLD)) {
+                        viewModel.loadNextPage();
                         isLoading = true;
                     }
                 }
             }
-
         });
     }
 
+    @Override
+    public void onPhotoClick(String photoUrl) {
+        // Handle photo click - you can open a detail activity or dialog here
+        // For example:
+        // Intent intent = new Intent(this, PhotoDetailActivity.class);
+        // intent.putExtra("photo_url", photoUrl);
+        // startActivity(intent);
+    }
 
-    // Pagination function and service call
-    private void performPagination() {
-        pbPhoto.setVisibility(View.VISIBLE);
-
-        Call<ResponsePhotos> call = flickrService.getResponse(20, pageNumber);
-        call.enqueue(new Callback<ResponsePhotos>() {
-            @Override
-            public void onResponse(Call<ResponsePhotos> call, Response<ResponsePhotos> response) {
-                List<Photo> photoList;
-                if (response.body() != null) {
-                    photoList = response.body().getPhotos().getPhoto();
-                    photosAdapter.uploadImages(photoList);
-                    pbPhoto.setVisibility(View.GONE);
-                }
-            }
-            @Override
-            public void onFailure(Call<ResponsePhotos> call, Throwable t) {
-                Log.d("Error", t.getMessage());
-            }
-        });
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        binding = null;
     }
 }
