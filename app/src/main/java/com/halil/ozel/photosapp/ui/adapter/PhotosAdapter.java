@@ -1,83 +1,61 @@
 package com.halil.ozel.photosapp.ui.adapter;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.halil.ozel.photosapp.R;
-import com.halil.ozel.photosapp.api.FlickrApi;
-import com.halil.ozel.photosapp.api.FlickrService;
+import com.halil.ozel.photosapp.databinding.ItemPhotoBinding;
+import com.halil.ozel.photosapp.repository.PhotoRepository;
 import com.halil.ozel.photosapp.data.Photo;
-import com.halil.ozel.photosapp.data.ResponsePhoto;
-import com.halil.ozel.photosapp.ui.activity.PhotosDetailActivity;
+import com.halil.ozel.photosapp.utils.ImageLoader;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.PhotosHolder> {
 
-    private final List<Photo> photoList;
     private final Context context;
+    private final PhotoRepository repository;
+    private final OnPhotoClickListener listener;
+    private List<Photo> photoList = new ArrayList<>();
 
-    public PhotosAdapter(List<Photo> photoList, Context context) {
-        this.photoList = photoList;
+    public interface OnPhotoClickListener {
+        void onPhotoClick(String photoUrl);
+    }
+
+    // Constructor for use WITH repository injection
+    public PhotosAdapter(Context context, PhotoRepository repository, OnPhotoClickListener listener) {
         this.context = context;
+        this.repository = repository;
+        this.listener = listener;
+    }
+
+    // Simplified constructor for Fragment usage (repository injected separately)
+    public PhotosAdapter(Context context, OnPhotoClickListener listener) {
+        this.context = context;
+        this.listener = listener;
+        this.repository = null; // Repository will be provided per-item if needed
     }
 
     @NonNull
     @Override
     public PhotosHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_photo, parent, false);
-        return new PhotosHolder(view);
+        ItemPhotoBinding binding = ItemPhotoBinding.inflate(
+                LayoutInflater.from(parent.getContext()),
+                parent,
+                false
+        );
+        return new PhotosHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull final PhotosHolder holder, int position) {
-
         Photo photo = photoList.get(position);
-
-        FlickrService flickrService = FlickrApi.getRetrofitInstance().create(FlickrService.class);
-
-        Call<ResponsePhoto> call = flickrService.getPhotoInfo(photo.getId());
-
-        call.enqueue(new Callback<ResponsePhoto>() {
-            @Override
-            public void onResponse(Call<ResponsePhoto> call, Response<ResponsePhoto> response) {
-
-                if (response.body() != null) {
-                    //https://farm66.staticflickr.com/65535/50079652836_4095c95086.jpg
-
-                    final String id = response.body().getPhoto().getId();
-                    String secret = response.body().getPhoto().getSecret();
-                    String server = response.body().getPhoto().getServer();
-                    int farm = response.body().getPhoto().getFarm();
-
-                    final String url = "https://farm" + farm + ".staticflickr.com/" + server + "/" + id + "_" + secret + ".jpg";
-
-                    Glide.with(context).load(url).into(holder.ivPhoto);
-
-                    holder.itemView.setOnClickListener(view -> {
-
-                        Intent intent = new Intent(view.getContext(), PhotosDetailActivity.class);
-                        intent.putExtra("posterUrl", url);
-                        view.getContext().startActivity(intent);
-                    });
-                }
-            }
-            @Override
-            public void onFailure(Call<ResponsePhoto> call, Throwable t) {}
-        });
+        holder.bind(photo);
     }
 
     @Override
@@ -85,18 +63,102 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.PhotosHold
         return photoList.size();
     }
 
-    public static class PhotosHolder extends RecyclerView.ViewHolder {
-        ImageView ivPhoto;
-
-        public PhotosHolder(View view) {
-            super(view);
-            ivPhoto = view.findViewById(R.id.ivPhoto);
+    public void submitList(List<Photo> newPhotos) {
+        if (newPhotos != null) {
+            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new PhotoDiffCallback(this.photoList, newPhotos));
+            this.photoList = new ArrayList<>(newPhotos);
+            diffResult.dispatchUpdatesTo(this);
         }
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    public void uploadImages(List<Photo> photos) {
-        photoList.addAll(photos);
-        notifyDataSetChanged();
+    public class PhotosHolder extends RecyclerView.ViewHolder {
+        private final ItemPhotoBinding binding;
+
+        public PhotosHolder(@NonNull ItemPhotoBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+        }
+
+        public void bind(Photo photo) {
+            // Build URL directly from photo data (more efficient than API call per item)
+            String url = buildPhotoUrl(photo);
+
+            if (url != null) {
+                ImageLoader.loadImage(binding.ivPhoto, url);
+
+                binding.getRoot().setOnClickListener(view -> {
+                    if (listener != null) {
+                        listener.onPhotoClick(url);
+                    }
+                });
+            } else if (repository != null) {
+                // Fallback to repository if URL can't be built directly
+                repository.getPhotoUrl(photo.getId()).observeForever(photoUrl -> {
+                    if (photoUrl != null) {
+                        ImageLoader.loadImage(binding.ivPhoto, photoUrl);
+
+                        binding.getRoot().setOnClickListener(view -> {
+                            if (listener != null) {
+                                listener.onPhotoClick(photoUrl);
+                            }
+                        });
+                    }
+                });
+            }
+        }
+
+        private String buildPhotoUrl(Photo photo) {
+            try {
+                // Build URL directly from Photo object if it has all required data
+                if (photo.getId() != null && photo.getSecret() != null &&
+                    photo.getServer() != null && photo.getFarm() != null) {
+
+                    int farm = Integer.parseInt(photo.getFarm());
+                    String server = photo.getServer();
+                    String id = photo.getId();
+                    String secret = photo.getSecret();
+
+                    return "https://farm" + farm + ".staticflickr.com/" +
+                           server + "/" + id + "_" + secret + ".jpg";
+                }
+            } catch (NumberFormatException e) {
+                return null;
+            }
+            return null;
+        }
+    }
+
+    // DiffUtil for efficient RecyclerView updates
+    private static class PhotoDiffCallback extends DiffUtil.Callback {
+        private final List<Photo> oldList;
+        private final List<Photo> newList;
+
+        public PhotoDiffCallback(List<Photo> oldList, List<Photo> newList) {
+            this.oldList = oldList;
+            this.newList = newList;
+        }
+
+        @Override
+        public int getOldListSize() {
+            return oldList.size();
+        }
+
+        @Override
+        public int getNewListSize() {
+            return newList.size();
+        }
+
+        @Override
+        public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+            return oldList.get(oldItemPosition).getId().equals(newList.get(newItemPosition).getId());
+        }
+
+        @Override
+        public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+            Photo oldPhoto = oldList.get(oldItemPosition);
+            Photo newPhoto = newList.get(newItemPosition);
+            return oldPhoto.getId().equals(newPhoto.getId()) &&
+                   oldPhoto.getTitle().equals(newPhoto.getTitle());
+        }
     }
 }
