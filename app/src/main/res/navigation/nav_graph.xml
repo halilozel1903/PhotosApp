@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/photosListFragment">
+
+    <fragment
+        android:id="@+id/photosListFragment"
+        android:name="com.halil.ozel.photosapp.ui.fragment.PhotosListFragment"
+        android:label="Photos"
+        tools:layout="@layout/fragment_photos_list">
+        <action
+            android:id="@+id/action_photosListFragment_to_photoDetailFragment"
+            app:destination="@id/photoDetailFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@android:anim/fade_in"
+            app:popExitAnim="@android:anim/fade_out" />
+        <action
+            android:id="@+id/action_photosListFragment_to_favoritesFragment"
+            app:destination="@id/favoritesFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/photoDetailFragment"
+        android:name="com.halil.ozel.photosapp.ui.fragment.PhotoDetailFragment"
+        android:label="Photo Detail"
+        tools:layout="@layout/fragment_photo_detail">
+        <argument
+            android:name="posterUrl"
+            app:argType="string" />
+        <argument
+            android:name="photoId"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/favoritesFragment"
+        android:name="com.halil.ozel.photosapp.ui.fragment.FavoritesFragment"
+        android:label="Favorites"
+        tools:layout="@layout/fragment_favorites">
+        <action
+            android:id="@+id/action_favoritesFragment_to_photoDetailFragment"
+            app:destination="@id/photoDetailFragment" />
+    </fragment>
+
+</navigation>
