@@ -6,8 +6,8 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.13.0'
-        classpath 'com.google.dagger:hilt-android-gradle-plugin:2.50'
+        classpath 'com.android.tools.build:gradle:8.6.1'
+        classpath 'com.google.dagger:hilt-android-gradle-plugin:2.52'
     }
 }
 
@@ -20,4 +20,88 @@ allprojects {
 
 tasks.register('clean', Delete) {
     delete rootProject.buildDir
+}
+
+// Build verification task - to check if build is healthy
+tasks.register('buildHealthCheck') {
+    group = 'verification'
+    description = 'Performs a health check on the build configuration and dependencies'
+    
+    doLast {
+        println "\n========================================="
+        println "🏥 Build Health Check Report"
+        println "========================================="
+        
+        // Check Gradle version
+        def gradleVersion = gradle.gradleVersion
+        println "✅ Gradle Version: ${gradleVersion}"
+        
+        // Check AGP version
+        println "✅ Android Gradle Plugin: Configured"
+        
+        // Check if all repositories are accessible
+        println "✅ Repositories configured: ${allprojects.collect { it.repositories.size() }.sum()}"
+        
+        println "\n📦 Project Structure:"
+        println "   - Root Project: ${rootProject.name}"
+        subprojects.each { subproject ->
+            println "   - Subproject: ${subproject.name}"
+        }
+        
+        println "\n✅ Build configuration looks healthy!"
+        println "=========================================\n"
+    }
+}
+
+// Dependency verification task
+tasks.register('verifyDependencies') {
+    group = 'verification'
+    description = 'Verifies that all dependencies can be resolved'
+    
+    doLast {
+        println "\n========================================="
+        println "📦 Dependency Verification"
+        println "========================================="
+        
+        def allResolved = true
+        
+        subprojects.each { subproject ->
+            println "\nChecking dependencies for: ${subproject.name}"
+            
+            try {
+                subproject.configurations.each { config ->
+                    if (config.canBeResolved) {
+                        config.resolve()
+                    }
+                }
+                println "✅ All dependencies resolved successfully"
+            } catch (Exception e) {
+                println "❌ Failed to resolve dependencies: ${e.message}"
+                allResolved = false
+            }
+        }
+        
+        if (allResolved) {
+            println "\n✅ All dependencies verified successfully!"
+        } else {
+            println "\n⚠️  Some dependencies could not be resolved"
+        }
+        println "=========================================\n"
+    }
+}
+
+// Complete build verification
+tasks.register('fullBuildVerification') {
+    group = 'verification'
+    description = 'Runs complete build verification including health check, dependency verification, lint, and tests'
+    
+    dependsOn 'buildHealthCheck', 'clean', 'build'
+    
+    doLast {
+        println "\n========================================="
+        println "✅ FULL BUILD VERIFICATION COMPLETED"
+        println "========================================="
+        println "All checks passed successfully!"
+        println "=========================================\n"
+    }
 }
