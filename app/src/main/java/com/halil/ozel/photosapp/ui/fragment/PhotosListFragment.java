@@ -72,6 +72,9 @@ public class PhotosListFragment extends Fragment {
                 } else if (itemId == R.id.action_search) {
                     Toast.makeText(requireContext(), "Search feature coming soon!", Toast.LENGTH_SHORT).show();
                     return true;
+                } else if (itemId == R.id.action_about) {
+                    showAboutDialog();
+                    return true;
                 }
                 return false;
             }
@@ -183,5 +186,15 @@ public class PhotosListFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    private void showAboutDialog() {
+        if (getContext() == null) return;
+
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(requireContext());
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_about, null);
+        builder.setView(dialogView);
+        builder.setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss());
+        builder.create().show();
     }
 }

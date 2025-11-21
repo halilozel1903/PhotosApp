@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Fotoğraflar Uygulaması</string>
+    
+    <!-- Main Screen -->
+    <string name="no_photos_available">Fotoğraf bulunamadı</string>
+    <string name="loading">Yükleniyor…</string>
+    <string name="error_loading_photos">Fotoğraflar yüklenirken hata oluştu</string>
+    <string name="pull_to_refresh">Yenilemek için çekin</string>
+    
+    <!-- Photo Detail -->
+    <string name="photo_detail">Fotoğraf Detayı</string>
+    <string name="back">Geri</string>
+    <string name="add_to_favorites">Favorilere ekle</string>
+    <string name="remove_favorite">Favorilerden çıkar</string>
+    <string name="added_to_favorites">Favorilere eklendi</string>
+    <string name="removed_from_favorites">Favorilerden çıkarıldı</string>
+    <string name="share">Paylaş</string>
+    
+    <!-- Favorites -->
+    <string name="favorites">Favoriler</string>
+    <string name="no_favorites">Henüz favori fotoğraf yok</string>
+    
+    <!-- Search -->
+    <string name="search">Ara</string>
+    <string name="search_photos">Fotoğraf ara…</string>
+    
+    <!-- App Description -->
+    <string name="app_description">Flickr API kullanarak son yüklenen fotoğrafları görüntüleyin</string>
+    <string name="app_feature_1">✓ Son yüklenen fotoğrafları görüntüle</string>
+    <string name="app_feature_2">✓ Fotoğraf detaylarını incele</string>
+    <string name="app_feature_3">✓ Favorilere ekle ve yönet</string>
+    <string name="app_feature_4">✓ Otomatik sayfalama ile sonsuz kaydırma</string>
+    <string name="app_feature_5">✓ Çevrimdışı favori yönetimi</string>
+    
+    <!-- Error Messages -->
+    <string name="error_network">Ağ bağlantısı hatası. Lütfen internet bağlantınızı kontrol edin.</string>
+    <string name="error_generic">Bir hata oluştu. Lütfen tekrar deneyin.</string>
+    <string name="error_no_more_photos">Başka fotoğraf bulunamadı.</string>
+    
+    <!-- Info Messages -->
+    <string name="loading_more_photos">Daha fazla fotoğraf yükleniyor…</string>
+    <string name="photo_count">%d fotoğraf yüklendi</string>
+    
+    <!-- About -->
+    <string name="about_app">Uygulama Hakkında</string>
+    <string name="about_description">Bu uygulama Flickr API kullanarak kullanıcılar tarafından yüklenen son fotoğrafları gösterir. Her istekte 20 fotoğraf yüklenir ve sayfa sonuna yaklaştıkça otomatik olarak yeni fotoğraflar getirilir.</string>
+    <string name="technology_stack">Kullanılan Teknolojiler</string>
+    <string name="tech_architecture">Mimari: MVVM + Repository Pattern</string>
+    <string name="tech_di">Dependency Injection: Hilt</string>
+    <string name="tech_networking">Ağ: Retrofit + OkHttp</string>
+    <string name="tech_image">Görsel Yükleme: Glide</string>
+    <string name="tech_ui">UI: Material Design 3</string>
+</resources>
