@@ -1,5 +1,7 @@
 # Photos 🖼 App 📱
 
+[![Android CI Build](https://github.com/halilozel1903/PhotosApp/actions/workflows/android-build.yml/badge.svg)](https://github.com/halilozel1903/PhotosApp/actions/workflows/android-build.yml)
+
 ![Screenshot](https://github.com/halilozel1903/PhotosApp/blob/master/flickr.jpg)
 
 This is an application developed using the `Flickr` API.
