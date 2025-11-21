@@ -39,7 +39,9 @@ public class PhotoViewModel extends ViewModel {
         
         loadingLiveData.setValue(true);
 
-        repository.getPhotos(Constants.ITEMS_PER_PAGE, page).observeForever(new androidx.lifecycle.Observer<List<Photo>>() {
+        LiveData<List<Photo>> photosLiveDataFromRepo = repository.getPhotos(Constants.ITEMS_PER_PAGE, page);
+        
+        androidx.lifecycle.Observer<List<Photo>> observer = new androidx.lifecycle.Observer<List<Photo>>() {
             @Override
             public void onChanged(List<Photo> photos) {
                 loadingLiveData.setValue(false);
@@ -52,9 +54,11 @@ public class PhotoViewModel extends ViewModel {
                     errorLiveData.setValue("No more photos available.");
                 }
                 // Remove observer to prevent memory leaks
-                repository.getPhotos(Constants.ITEMS_PER_PAGE, page).removeObserver(this);
+                photosLiveDataFromRepo.removeObserver(this);
             }
-        });
+        };
+        
+        photosLiveDataFromRepo.observeForever(observer);
     }
 
     public void loadNextPage() {

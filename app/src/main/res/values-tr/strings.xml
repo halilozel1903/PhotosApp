@@ -44,6 +44,7 @@
     
     <!-- About -->
     <string name="about_app">Uygulama Hakkında</string>
+    <string name="features_title">Özellikler</string>
     <string name="about_description">Bu uygulama Flickr API kullanarak kullanıcılar tarafından yüklenen son fotoğrafları gösterir. Her istekte 20 fotoğraf yüklenir ve sayfa sonuna yaklaştıkça otomatik olarak yeni fotoğraflar getirilir.</string>
     <string name="technology_stack">Kullanılan Teknolojiler</string>
     <string name="tech_architecture">Mimari: MVVM + Repository Pattern</string>

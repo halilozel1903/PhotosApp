@@ -150,7 +150,7 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.PhotosHold
                 oldPhoto.getId() == null || newPhoto.getId() == null) {
                 return false;
             }
-            return oldPhoto.getId().equals(newList.get(newItemPosition).getId());
+            return oldPhoto.getId().equals(newPhoto.getId());
         }
 
         @Override

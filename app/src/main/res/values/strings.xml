@@ -43,6 +43,7 @@
     
     <!-- About -->
     <string name="about_app">About the App</string>
+    <string name="features_title">Features</string>
     <string name="about_description">This app displays recently uploaded photos from Flickr API. It loads 20 photos per request and automatically fetches new photos as you scroll to the bottom.</string>
     <string name="technology_stack">Technology Stack</string>
     <string name="tech_architecture">Architecture: MVVM + Repository Pattern</string>
