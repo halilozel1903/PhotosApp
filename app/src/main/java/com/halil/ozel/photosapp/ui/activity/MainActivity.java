@@ -32,13 +32,18 @@ public class MainActivity extends AppCompatActivity {
                 .findFragmentById(R.id.nav_host_fragment);
         if (navHostFragment != null) {
             navController = navHostFragment.getNavController();
-            NavigationUI.setupActionBarWithNavController(this, navController);
+            if (navController != null) {
+                NavigationUI.setupActionBarWithNavController(this, navController);
+            }
         }
     }
 
     @Override
     public boolean onSupportNavigateUp() {
-        return navController.navigateUp() || super.onSupportNavigateUp();
+        if (navController != null) {
+            return navController.navigateUp() || super.onSupportNavigateUp();
+        }
+        return super.onSupportNavigateUp();
     }
 
     @Override

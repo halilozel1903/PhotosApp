@@ -56,7 +56,11 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
     }
 
     public void submitList(List<FavoritePhoto> favorites) {
-        this.favoritesList = new ArrayList<>(favorites);
+        if (favorites != null) {
+            this.favoritesList = new ArrayList<>(favorites);
+        } else {
+            this.favoritesList = new ArrayList<>();
+        }
         notifyDataSetChanged();
     }
 
@@ -69,17 +73,23 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
         }
 
         public void bind(FavoritePhoto photo) {
+            if (photo == null) {
+                return;
+            }
+            
             ImageLoader.loadImage(binding.ivPhoto, photo.getUrl());
-            binding.tvTitle.setText(photo.getTitle());
+            
+            String title = photo.getTitle();
+            binding.tvTitle.setText(title != null ? title : "");
 
             binding.getRoot().setOnClickListener(v -> {
-                if (clickListener != null) {
+                if (clickListener != null && photo.getUrl() != null) {
                     clickListener.onFavoriteClick(photo.getUrl());
                 }
             });
 
             binding.btnRemove.setOnClickListener(v -> {
-                if (removeListener != null) {
+                if (removeListener != null && photo.getId() != null) {
                     removeListener.onRemoveFavorite(photo.getId());
                 }
             });

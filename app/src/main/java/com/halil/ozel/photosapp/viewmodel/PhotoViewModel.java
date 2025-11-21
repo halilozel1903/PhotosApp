@@ -32,17 +32,33 @@ public class PhotoViewModel extends ViewModel {
     }
 
     public void loadPhotos(int page) {
+        if (loadingLiveData.getValue() != null && loadingLiveData.getValue()) {
+            // Already loading, prevent duplicate requests
+            return;
+        }
+        
         loadingLiveData.setValue(true);
 
-        repository.getPhotos(Constants.ITEMS_PER_PAGE, page).observeForever(photos -> {
-            loadingLiveData.setValue(false);
-            if (photos != null) {
-                allPhotos.addAll(photos);
-                photosLiveData.setValue(new ArrayList<>(allPhotos));
-            } else {
-                errorLiveData.setValue("Failed to load photos");
+        LiveData<List<Photo>> photosLiveDataFromRepo = repository.getPhotos(Constants.ITEMS_PER_PAGE, page);
+        
+        androidx.lifecycle.Observer<List<Photo>> observer = new androidx.lifecycle.Observer<List<Photo>>() {
+            @Override
+            public void onChanged(List<Photo> photos) {
+                loadingLiveData.setValue(false);
+                if (photos != null && !photos.isEmpty()) {
+                    allPhotos.addAll(photos);
+                    photosLiveData.setValue(new ArrayList<>(allPhotos));
+                } else if (photos == null) {
+                    errorLiveData.setValue("Failed to load photos. Please check your connection.");
+                } else {
+                    errorLiveData.setValue("No more photos available.");
+                }
+                // Remove observer to prevent memory leaks
+                photosLiveDataFromRepo.removeObserver(this);
             }
-        });
+        };
+        
+        photosLiveDataFromRepo.observeForever(observer);
     }
 
     public void loadNextPage() {

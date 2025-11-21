@@ -1,18 +1,54 @@
 <resources>
     <string name="app_name">Photos App</string>
+    
+    <!-- Main Screen -->
     <string name="no_photos_available">No photos available</string>
-    <string name="photo_detail">Photo Detail</string>
-    <string name="back">Back</string>
     <string name="loading">Loading…</string>
     <string name="error_loading_photos">Error loading photos</string>
     <string name="pull_to_refresh">Pull to refresh</string>
+    
+    <!-- Photo Detail -->
+    <string name="photo_detail">Photo Detail</string>
+    <string name="back">Back</string>
     <string name="add_to_favorites">Add to favorites</string>
     <string name="remove_favorite">Remove from favorites</string>
     <string name="added_to_favorites">Added to favorites</string>
     <string name="removed_from_favorites">Removed from favorites</string>
+    <string name="share">Share</string>
+    
+    <!-- Favorites -->
     <string name="favorites">Favorites</string>
     <string name="no_favorites">No favorite photos yet</string>
-    <string name="share">Share</string>
+    
+    <!-- Search -->
     <string name="search">Search</string>
     <string name="search_photos">Search photos…</string>
+    
+    <!-- App Description -->
+    <string name="app_description">View recently uploaded photos using Flickr API</string>
+    <string name="app_feature_1">✓ Browse recently uploaded photos</string>
+    <string name="app_feature_2">✓ View photo details</string>
+    <string name="app_feature_3">✓ Add and manage favorites</string>
+    <string name="app_feature_4">✓ Infinite scrolling with automatic pagination</string>
+    <string name="app_feature_5">✓ Offline favorites management</string>
+    
+    <!-- Error Messages -->
+    <string name="error_network">Network connection error. Please check your internet connection.</string>
+    <string name="error_generic">An error occurred. Please try again.</string>
+    <string name="error_no_more_photos">No more photos available.</string>
+    
+    <!-- Info Messages -->
+    <string name="loading_more_photos">Loading more photos…</string>
+    <string name="photo_count">%d photos loaded</string>
+    
+    <!-- About -->
+    <string name="about_app">About the App</string>
+    <string name="features_title">Features</string>
+    <string name="about_description">This app displays recently uploaded photos from Flickr API. It loads 20 photos per request and automatically fetches new photos as you scroll to the bottom.</string>
+    <string name="technology_stack">Technology Stack</string>
+    <string name="tech_architecture">Architecture: MVVM + Repository Pattern</string>
+    <string name="tech_di">Dependency Injection: Hilt</string>
+    <string name="tech_networking">Networking: Retrofit + OkHttp</string>
+    <string name="tech_image">Image Loading: Glide</string>
+    <string name="tech_ui">UI: Material Design 3</string>
 </resources>

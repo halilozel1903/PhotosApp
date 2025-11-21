@@ -80,6 +80,10 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.PhotosHold
         }
 
         public void bind(Photo photo) {
+            if (photo == null) {
+                return;
+            }
+
             // Build URL directly from photo data (more efficient than API call per item)
             String url = buildPhotoUrl(photo);
 
@@ -91,40 +95,30 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.PhotosHold
                         listener.onPhotoClick(url);
                     }
                 });
-            } else if (repository != null) {
-                // Fallback to repository if URL can't be built directly
-                repository.getPhotoUrl(photo.getId()).observeForever(photoUrl -> {
-                    if (photoUrl != null) {
-                        ImageLoader.loadImage(binding.ivPhoto, photoUrl);
-
-                        binding.getRoot().setOnClickListener(view -> {
-                            if (listener != null) {
-                                listener.onPhotoClick(photoUrl);
-                            }
-                        });
-                    }
-                });
+            } else {
+                // Set placeholder if URL cannot be built
+                binding.ivPhoto.setImageResource(com.halil.ozel.photosapp.R.drawable.ic_launcher_background);
             }
         }
 
         private String buildPhotoUrl(Photo photo) {
             try {
                 // Build URL directly from Photo object if it has all required data
-                if (photo.getId() != null && photo.getSecret() != null &&
-                    photo.getServer() != null && photo.getFarm() != null) {
-
-                    int farm = Integer.parseInt(photo.getFarm());
-                    String server = photo.getServer();
-                    String id = photo.getId();
-                    String secret = photo.getSecret();
-
-                    return "https://farm" + farm + ".staticflickr.com/" +
-                           server + "/" + id + "_" + secret + ".jpg";
+                if (photo == null || photo.getId() == null || photo.getSecret() == null ||
+                    photo.getServer() == null || photo.getFarm() == null) {
+                    return null;
                 }
-            } catch (NumberFormatException e) {
+
+                int farm = Integer.parseInt(photo.getFarm());
+                String server = photo.getServer();
+                String id = photo.getId();
+                String secret = photo.getSecret();
+
+                return "https://farm" + farm + ".staticflickr.com/" +
+                       server + "/" + id + "_" + secret + ".jpg";
+            } catch (NumberFormatException | NullPointerException e) {
                 return null;
             }
-            return null;
         }
     }
 
@@ -150,15 +144,24 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.PhotosHold
 
         @Override
         public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-            return oldList.get(oldItemPosition).getId().equals(newList.get(newItemPosition).getId());
+            Photo oldPhoto = oldList.get(oldItemPosition);
+            Photo newPhoto = newList.get(newItemPosition);
+            if (oldPhoto == null || newPhoto == null || 
+                oldPhoto.getId() == null || newPhoto.getId() == null) {
+                return false;
+            }
+            return oldPhoto.getId().equals(newPhoto.getId());
         }
 
         @Override
         public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
             Photo oldPhoto = oldList.get(oldItemPosition);
             Photo newPhoto = newList.get(newItemPosition);
-            return oldPhoto.getId().equals(newPhoto.getId()) &&
-                   oldPhoto.getTitle().equals(newPhoto.getTitle());
+            if (oldPhoto == null || newPhoto == null) {
+                return oldPhoto == newPhoto;
+            }
+            return oldPhoto.getId() != null && oldPhoto.getId().equals(newPhoto.getId()) &&
+                   oldPhoto.getTitle() != null && oldPhoto.getTitle().equals(newPhoto.getTitle());
         }
     }
 }

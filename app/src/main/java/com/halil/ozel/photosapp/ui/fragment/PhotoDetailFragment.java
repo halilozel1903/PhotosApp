@@ -50,14 +50,18 @@ public class PhotoDetailFragment extends Fragment {
         if (getArguments() != null) {
             posterUrl = getArguments().getString(Constants.EXTRA_POSTER_URL);
             photoId = getArguments().getString("photoId", posterUrl); // Use URL as fallback ID
-            ImageLoader.loadDetailImage(binding.ivPhotoDetail, posterUrl);
+            if (posterUrl != null) {
+                ImageLoader.loadDetailImage(binding.ivPhotoDetail, posterUrl);
+            }
         }
 
         setupMenu();
 
-        binding.btnBack.setOnClickListener(v ->
-                Navigation.findNavController(v).navigateUp()
-        );
+        binding.btnBack.setOnClickListener(v -> {
+            if (getActivity() != null && !getActivity().isFinishing()) {
+                Navigation.findNavController(v).navigateUp();
+            }
+        });
 
         binding.btnFavorite.setOnClickListener(v -> toggleFavorite());
 
@@ -83,18 +87,30 @@ public class PhotoDetailFragment extends Fragment {
     }
 
     private void toggleFavorite() {
+        if (photoId == null || posterUrl == null) {
+            return;
+        }
+        
         if (favoritesManager.isFavorite(photoId)) {
             favoritesManager.removeFavorite(photoId);
-            Toast.makeText(requireContext(), R.string.removed_from_favorites, Toast.LENGTH_SHORT).show();
+            if (getContext() != null) {
+                Toast.makeText(getContext(), R.string.removed_from_favorites, Toast.LENGTH_SHORT).show();
+            }
         } else {
             FavoritePhoto favorite = new FavoritePhoto(photoId, posterUrl, "Photo " + photoId);
             favoritesManager.addFavorite(favorite);
-            Toast.makeText(requireContext(), R.string.added_to_favorites, Toast.LENGTH_SHORT).show();
+            if (getContext() != null) {
+                Toast.makeText(getContext(), R.string.added_to_favorites, Toast.LENGTH_SHORT).show();
+            }
         }
         updateFavoriteButton();
     }
 
     private void updateFavoriteButton() {
+        if (photoId == null || binding == null) {
+            return;
+        }
+        
         if (favoritesManager.isFavorite(photoId)) {
             binding.btnFavorite.setImageResource(android.R.drawable.star_big_on);
         } else {
