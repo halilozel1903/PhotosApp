@@ -36,14 +36,24 @@ public class PhotoRepository {
         call.enqueue(new Callback<ResponsePhotos>() {
             @Override
             public void onResponse(Call<ResponsePhotos> call, Response<ResponsePhotos> response) {
-                if (response.body() != null && response.body().getPhotos() != null) {
-                    photosLiveData.setValue(response.body().getPhotos().getPhoto());
+                try {
+                    if (response.isSuccessful() && response.body() != null && 
+                        response.body().getPhotos() != null && 
+                        response.body().getPhotos().getPhoto() != null) {
+                        photosLiveData.setValue(response.body().getPhotos().getPhoto());
+                    } else {
+                        Log.e(TAG, "Invalid response: " + response.code());
+                        photosLiveData.setValue(null);
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Error parsing response: " + e.getMessage());
+                    photosLiveData.setValue(null);
                 }
             }
 
             @Override
             public void onFailure(Call<ResponsePhotos> call, Throwable t) {
-                Log.e(TAG, "Error loading photos: " + t.getMessage());
+                Log.e(TAG, "Error loading photos: " + (t.getMessage() != null ? t.getMessage() : "Unknown error"));
                 photosLiveData.setValue(null);
             }
         });
@@ -54,25 +64,43 @@ public class PhotoRepository {
     public LiveData<String> getPhotoUrl(String photoId) {
         MutableLiveData<String> photoUrlLiveData = new MutableLiveData<>();
 
+        if (photoId == null || photoId.isEmpty()) {
+            photoUrlLiveData.setValue(null);
+            return photoUrlLiveData;
+        }
+
         Call<ResponsePhoto> call = flickrService.getPhotoInfo(photoId);
         call.enqueue(new Callback<ResponsePhoto>() {
             @Override
             public void onResponse(Call<ResponsePhoto> call, Response<ResponsePhoto> response) {
-                if (response.body() != null && response.body().getPhoto() != null) {
-                    String id = response.body().getPhoto().getId();
-                    String secret = response.body().getPhoto().getSecret();
-                    String server = response.body().getPhoto().getServer();
-                    int farm = response.body().getPhoto().getFarm();
+                try {
+                    if (response.isSuccessful() && response.body() != null && 
+                        response.body().getPhoto() != null) {
+                        String id = response.body().getPhoto().getId();
+                        String secret = response.body().getPhoto().getSecret();
+                        String server = response.body().getPhoto().getServer();
+                        int farm = response.body().getPhoto().getFarm();
 
-                    String url = "https://farm" + farm + ".staticflickr.com/" +
-                                server + "/" + id + "_" + secret + ".jpg";
-                    photoUrlLiveData.setValue(url);
+                        if (id != null && secret != null && server != null) {
+                            String url = "https://farm" + farm + ".staticflickr.com/" +
+                                        server + "/" + id + "_" + secret + ".jpg";
+                            photoUrlLiveData.setValue(url);
+                        } else {
+                            photoUrlLiveData.setValue(null);
+                        }
+                    } else {
+                        Log.e(TAG, "Invalid photo info response: " + response.code());
+                        photoUrlLiveData.setValue(null);
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Error parsing photo info: " + e.getMessage());
+                    photoUrlLiveData.setValue(null);
                 }
             }
 
             @Override
             public void onFailure(Call<ResponsePhoto> call, Throwable t) {
-                Log.e(TAG, "Error loading photo info: " + t.getMessage());
+                Log.e(TAG, "Error loading photo info: " + (t.getMessage() != null ? t.getMessage() : "Unknown error"));
                 photoUrlLiveData.setValue(null);
             }
         });

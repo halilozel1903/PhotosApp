@@ -48,23 +48,35 @@ public class FavoritesFragment extends Fragment {
     }
 
     private void setupRecyclerView() {
+        if (getContext() == null || binding == null) {
+            return;
+        }
+        
         GridLayoutManager layoutManager = new GridLayoutManager(requireContext(), Constants.GRID_COLUMNS);
         binding.rvFavorites.setLayoutManager(layoutManager);
 
         adapter = new FavoritesAdapter(requireContext(), photoUrl -> {
-            Bundle bundle = new Bundle();
-            bundle.putString(Constants.EXTRA_POSTER_URL, photoUrl);
-            Navigation.findNavController(binding.getRoot())
-                    .navigate(R.id.action_favoritesFragment_to_photoDetailFragment, bundle);
+            if (photoUrl != null && binding != null) {
+                Bundle bundle = new Bundle();
+                bundle.putString(Constants.EXTRA_POSTER_URL, photoUrl);
+                Navigation.findNavController(binding.getRoot())
+                        .navigate(R.id.action_favoritesFragment_to_photoDetailFragment, bundle);
+            }
         }, photoId -> {
-            favoritesManager.removeFavorite(photoId);
-            loadFavorites();
+            if (photoId != null) {
+                favoritesManager.removeFavorite(photoId);
+                loadFavorites();
+            }
         });
 
         binding.rvFavorites.setAdapter(adapter);
     }
 
     private void loadFavorites() {
+        if (adapter == null || binding == null) {
+            return;
+        }
+        
         List<FavoritePhoto> favorites = favoritesManager.getFavorites();
         adapter.submitList(favorites);
 

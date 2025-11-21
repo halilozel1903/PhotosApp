@@ -79,25 +79,37 @@ public class PhotosListFragment extends Fragment {
     }
 
     private void setupRecyclerView() {
+        if (getContext() == null || binding == null) {
+            return;
+        }
+        
         gridLayoutManager = new GridLayoutManager(requireContext(), Constants.GRID_COLUMNS);
         binding.rvPhotos.setHasFixedSize(true);
         binding.rvPhotos.setLayoutManager(gridLayoutManager);
 
         photosAdapter = new PhotosAdapter(requireContext(), photoUrl -> {
-            // Navigate to detail fragment
-            Bundle bundle = new Bundle();
-            bundle.putString(Constants.EXTRA_POSTER_URL, photoUrl);
-            Navigation.findNavController(binding.getRoot())
-                    .navigate(R.id.action_photosListFragment_to_photoDetailFragment, bundle);
+            if (photoUrl != null && binding != null) {
+                // Navigate to detail fragment
+                Bundle bundle = new Bundle();
+                bundle.putString(Constants.EXTRA_POSTER_URL, photoUrl);
+                Navigation.findNavController(binding.getRoot())
+                        .navigate(R.id.action_photosListFragment_to_photoDetailFragment, bundle);
+            }
         });
         binding.rvPhotos.setAdapter(photosAdapter);
     }
 
     private void setupViewModel() {
+        if (getActivity() == null) {
+            return;
+        }
+        
         viewModel = new ViewModelProvider(this).get(PhotoViewModel.class);
 
         // Observe photos
         viewModel.getPhotos().observe(getViewLifecycleOwner(), photos -> {
+            if (binding == null) return;
+            
             if (photos != null && !photos.isEmpty()) {
                 photosAdapter.submitList(photos);
                 binding.emptyView.setVisibility(View.GONE);
@@ -108,6 +120,8 @@ public class PhotosListFragment extends Fragment {
 
         // Observe loading state
         viewModel.getLoading().observe(getViewLifecycleOwner(), loading -> {
+            if (binding == null) return;
+            
             if (loading != null) {
                 binding.pbPhoto.setVisibility(loading ? View.VISIBLE : View.GONE);
                 binding.swipeRefresh.setRefreshing(loading);
@@ -117,17 +131,23 @@ public class PhotosListFragment extends Fragment {
 
         // Observe errors
         viewModel.getError().observe(getViewLifecycleOwner(), error -> {
-            if (error != null) {
-                Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show();
+            if (binding == null || getContext() == null) return;
+            
+            if (error != null && !error.isEmpty()) {
+                Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void setupScrollListener() {
+        if (binding == null) return;
+        
         binding.rvPhotos.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
+
+                if (gridLayoutManager == null || viewModel == null) return;
 
                 visibleItemCount = gridLayoutManager.getChildCount();
                 totalItemCount = gridLayoutManager.getItemCount();
@@ -151,6 +171,8 @@ public class PhotosListFragment extends Fragment {
     }
 
     private void setupSwipeRefresh() {
+        if (binding == null || viewModel == null) return;
+        
         binding.swipeRefresh.setOnRefreshListener(() -> {
             previousTotal = 0;
             viewModel.refresh();

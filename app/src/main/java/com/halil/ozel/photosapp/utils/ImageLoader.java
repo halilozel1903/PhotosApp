@@ -16,39 +16,57 @@ public class ImageLoader {
     }
 
     public static void loadImage(ImageView imageView, @Nullable String url) {
+        if (imageView == null) {
+            return;
+        }
+        
         if (url == null || url.isEmpty()) {
             imageView.setImageResource(R.drawable.ic_launcher_background);
             return;
         }
 
-        RequestOptions options = new RequestOptions()
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .centerCrop()
-                .placeholder(R.drawable.ic_launcher_background)
-                .error(R.drawable.ic_launcher_background);
+        try {
+            RequestOptions options = new RequestOptions()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .centerCrop()
+                    .placeholder(R.drawable.ic_launcher_background)
+                    .error(R.drawable.ic_launcher_background);
 
-        Glide.with(imageView.getContext())
-                .load(url)
-                .apply(options)
-                .into(imageView);
+            Glide.with(imageView.getContext())
+                    .load(url)
+                    .apply(options)
+                    .into(imageView);
+        } catch (Exception e) {
+            // Handle any Glide exceptions gracefully
+            imageView.setImageResource(R.drawable.ic_launcher_background);
+        }
     }
 
     public static void loadDetailImage(ImageView imageView, @Nullable String url) {
+        if (imageView == null) {
+            return;
+        }
+        
         if (url == null || url.isEmpty()) {
             imageView.setImageResource(R.drawable.ic_launcher_background);
             return;
         }
 
-        RequestOptions options = new RequestOptions()
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .fitCenter()
-                .placeholder(R.drawable.ic_launcher_background)
-                .error(R.drawable.ic_launcher_background);
+        try {
+            RequestOptions options = new RequestOptions()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .fitCenter()
+                    .placeholder(R.drawable.ic_launcher_background)
+                    .error(R.drawable.ic_launcher_background);
 
-        Glide.with(imageView.getContext())
-                .load(url)
-                .apply(options)
-                .into(imageView);
+            Glide.with(imageView.getContext())
+                    .load(url)
+                    .apply(options)
+                    .into(imageView);
+        } catch (Exception e) {
+            // Handle any Glide exceptions gracefully
+            imageView.setImageResource(R.drawable.ic_launcher_background);
+        }
     }
 }
 

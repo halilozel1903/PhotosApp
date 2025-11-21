@@ -29,39 +29,65 @@ public class FavoritesManager {
     }
 
     public void addFavorite(FavoritePhoto photo) {
+        if (photo == null || photo.getId() == null) {
+            return;
+        }
+        
         List<FavoritePhoto> favorites = getFavorites();
 
         // Remove if already exists
-        favorites.removeIf(f -> f.getId().equals(photo.getId()));
+        favorites.removeIf(f -> f != null && f.getId() != null && f.getId().equals(photo.getId()));
 
         favorites.add(0, photo);
         saveFavorites(favorites);
     }
 
     public void removeFavorite(String photoId) {
+        if (photoId == null) {
+            return;
+        }
+        
         List<FavoritePhoto> favorites = getFavorites();
-        favorites.removeIf(f -> f.getId().equals(photoId));
+        favorites.removeIf(f -> f != null && f.getId() != null && f.getId().equals(photoId));
         saveFavorites(favorites);
     }
 
     public boolean isFavorite(String photoId) {
+        if (photoId == null) {
+            return false;
+        }
+        
         List<FavoritePhoto> favorites = getFavorites();
-        return favorites.stream().anyMatch(f -> f.getId().equals(photoId));
+        return favorites.stream().anyMatch(f -> f != null && f.getId() != null && f.getId().equals(photoId));
     }
 
     public List<FavoritePhoto> getFavorites() {
-        String json = sharedPreferences.getString(KEY_FAVORITES, null);
-        if (json == null) {
+        try {
+            String json = sharedPreferences.getString(KEY_FAVORITES, null);
+            if (json == null || json.isEmpty()) {
+                return new ArrayList<>();
+            }
+
+            Type type = new TypeToken<ArrayList<FavoritePhoto>>() {}.getType();
+            List<FavoritePhoto> favorites = gson.fromJson(json, type);
+            return favorites != null ? favorites : new ArrayList<>();
+        } catch (Exception e) {
+            // Return empty list if any error occurs during deserialization
             return new ArrayList<>();
         }
-
-        Type type = new TypeToken<ArrayList<FavoritePhoto>>() {}.getType();
-        return gson.fromJson(json, type);
     }
 
     private void saveFavorites(List<FavoritePhoto> favorites) {
-        String json = gson.toJson(favorites);
-        sharedPreferences.edit().putString(KEY_FAVORITES, json).apply();
+        if (favorites == null) {
+            return;
+        }
+        
+        try {
+            String json = gson.toJson(favorites);
+            sharedPreferences.edit().putString(KEY_FAVORITES, json).apply();
+        } catch (Exception e) {
+            // Log error but don't crash
+        }
     }
 
     public void clearFavorites() {
