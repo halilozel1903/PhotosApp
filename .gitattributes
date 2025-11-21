@@ -1,0 +1,45 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Source code
+*.java text diff=java
+*.gradle text diff=java
+*.kt text diff=kotlin
+*.xml text diff=xml
+*.json text
+
+# Scripts
+*.sh text eol=lf
+gradlew text eol=lf
+*.bat text eol=crlf
+
+# Documentation
+*.md text
+*.txt text
+
+# Binary files
+*.jar binary
+*.apk binary
+*.ap_ binary
+*.dex binary
+*.class binary
+
+# Images
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+
+# Archives
+*.zip binary
+*.gz binary
+*.tar binary
+*.rar binary
+*.7z binary
+
+# Exclude files from exporting
+.gitattributes export-ignore
+.gitignore export-ignore
+.github export-ignore

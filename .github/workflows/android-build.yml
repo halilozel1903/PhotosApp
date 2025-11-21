@@ -1,0 +1,122 @@
+name: Android CI Build
+
+on:
+  push:
+    branches: [ master, main, develop ]
+  pull_request:
+    branches: [ master, main, develop ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: gradle
+        
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+      
+    - name: Check Gradle version
+      run: ./gradlew --version
+      
+    - name: Run Build Health Check
+      run: ./gradlew buildHealthCheck
+      
+    - name: Verify Dependencies
+      run: ./gradlew verifyDependencies
+      
+    - name: Run Lint
+      run: ./gradlew lint
+      continue-on-error: true
+      
+    - name: Build Debug APK
+      run: ./gradlew assembleDebug --stacktrace
+      
+    - name: Build Release APK
+      run: ./gradlew assembleRelease --stacktrace
+      continue-on-error: true
+      
+    - name: Run Unit Tests
+      run: ./gradlew test
+      continue-on-error: true
+      
+    - name: Upload Debug APK
+      if: success()
+      uses: actions/upload-artifact@v4
+      with:
+        name: debug-apk
+        path: app/build/outputs/apk/debug/*.apk
+        retention-days: 7
+        
+    - name: Upload Release APK
+      if: success()
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-apk
+        path: app/build/outputs/apk/release/*.apk
+        retention-days: 7
+        
+    - name: Upload Lint Results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: lint-results
+        path: app/build/reports/lint-results*.html
+        retention-days: 7
+        
+    - name: Upload Test Results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results
+        path: app/build/reports/tests/
+        retention-days: 7
+        
+    - name: Upload Build Reports
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-reports
+        path: |
+          app/build/reports/
+          app/build/outputs/
+        retention-days: 7
+        
+    - name: Build Summary
+      if: always()
+      run: |
+        echo "## 📊 Build Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### ✅ Build Information" >> $GITHUB_STEP_SUMMARY
+        echo "- **Gradle Version:** $(./gradlew --version | grep 'Gradle' | head -1)" >> $GITHUB_STEP_SUMMARY
+        echo "- **Java Version:** $(java -version 2>&1 | head -1)" >> $GITHUB_STEP_SUMMARY
+        echo "- **Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Triggered by:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 📦 Artifacts" >> $GITHUB_STEP_SUMMARY
+        echo "- Debug APK" >> $GITHUB_STEP_SUMMARY
+        echo "- Release APK" >> $GITHUB_STEP_SUMMARY
+        echo "- Lint Results" >> $GITHUB_STEP_SUMMARY
+        echo "- Test Results" >> $GITHUB_STEP_SUMMARY
+        echo "- Build Reports" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        # Find and report debug APK info with flexible path search
+        DEBUG_APK=$(find app/build/outputs/apk/debug -name "*.apk" -type f 2>/dev/null | head -1)
+        if [ -n "$DEBUG_APK" ] && [ -f "$DEBUG_APK" ]; then
+          echo "✅ Debug APK built successfully" >> $GITHUB_STEP_SUMMARY
+          APK_SIZE=$(du -h "$DEBUG_APK" | cut -f1)
+          echo "- APK Size: $APK_SIZE" >> $GITHUB_STEP_SUMMARY
+          echo "- APK Path: $DEBUG_APK" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ Debug APK build failed" >> $GITHUB_STEP_SUMMARY
+        fi

@@ -1,5 +1,7 @@
 # Photos 🖼 App 📱
 
+[![Android CI Build](https://github.com/halilozel1903/PhotosApp/actions/workflows/android-build.yml/badge.svg)](https://github.com/halilozel1903/PhotosApp/actions/workflows/android-build.yml)
+
 ![Screenshot](https://github.com/halilozel1903/PhotosApp/blob/master/flickr.jpg)
 
 This is an application developed using the `Flickr` API.
@@ -21,6 +23,73 @@ This API takes pictures on the Home Page: https://www.flickr.com/services/api/ex
 <img src="https://github.com/halilozel1903/PhotosApp/blob/master/home.jpeg" width="350" /> <img src="https://github.com/halilozel1903/PhotosApp/blob/master/home1.jpeg" width="350" />
 
 <img src="https://github.com/halilozel1903/PhotosApp/blob/master/detail.jpeg" width="350" /> <img src="https://github.com/halilozel1903/PhotosApp/blob/master/detail1.jpeg" width="350" />  
+
+## Build & Verify 🔧
+
+### Requirements
+- JDK 17 or higher
+- Android SDK with API Level 35
+- Gradle 8.9 (wrapper included)
+
+### Building the Project
+```bash
+# Clean and build the project
+./gradlew clean build
+
+# Build debug APK
+./gradlew assembleDebug
+
+# Build release APK
+./gradlew assembleRelease
+```
+
+### Build Verification Tasks
+This project includes custom Gradle tasks to verify build health:
+
+```bash
+# Run build health check
+./gradlew buildHealthCheck
+
+# Verify all dependencies can be resolved
+./gradlew verifyDependencies
+
+# Run full build verification (includes lint, tests, and build)
+./gradlew fullBuildVerification
+```
+
+### Running Tests
+```bash
+# Run unit tests
+./gradlew test
+
+# Run instrumented tests
+./gradlew connectedAndroidTest
+```
+
+### Continuous Integration
+The project includes GitHub Actions workflow that automatically:
+- ✅ Builds the project on every push/PR
+- ✅ Runs lint checks
+- ✅ Executes tests
+- ✅ Uploads build reports and artifacts
+
+Check `.github/workflows/android-build.yml` for CI/CD configuration.
+
+## Technology Stack 🛠
+
+- **Android Gradle Plugin**: 8.6.1
+- **Gradle**: 8.9
+- **Compile SDK**: 35
+- **Min SDK**: 21
+- **Target SDK**: 35
+- **Java**: 17
+- **Architecture**: MVVM with Repository Pattern
+- **DI**: Hilt 2.52
+- **Networking**: Retrofit 2.11.0, OkHttp 4.12.0
+- **Image Loading**: Glide 4.16.0
+- **UI**: Material Design 3, ViewBinding, Navigation Component
+- **Async**: Kotlin Coroutines 1.9.0
+- **Testing**: JUnit, Espresso
 
 If this project help 💁 you to develop, you can give me a cup of coffee. ☕
 
