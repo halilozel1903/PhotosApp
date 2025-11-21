@@ -64,7 +64,8 @@ tasks.register('verifyDependencies') {
         println "========================================="
         
         def allResolved = true
-        def configsToCheck = ['implementation', 'testImplementation', 'androidTestImplementation']
+        // Configuration patterns to check for better reliability
+        def configPatterns = ['implementation', 'testImplementation', 'androidTestImplementation', 'RuntimeClasspath']
         
         subprojects.each { subproject ->
             println "\nChecking dependencies for: ${subproject.name}"
@@ -72,7 +73,11 @@ tasks.register('verifyDependencies') {
             try {
                 subproject.configurations.each { config ->
                     // Only check essential configurations to improve performance
-                    if (config.canBeResolved && (configsToCheck.contains(config.name) || config.name.endsWith('RuntimeClasspath'))) {
+                    def shouldCheck = configPatterns.any { pattern -> 
+                        config.name == pattern || config.name.endsWith(pattern.capitalize())
+                    }
+                    
+                    if (config.canBeResolved && shouldCheck) {
                         config.resolve()
                     }
                 }
@@ -103,8 +108,13 @@ tasks.register('fullBuildVerification') {
     dependsOn 'build'
     
     // Ensure proper execution order
-    tasks.findByName('clean').mustRunAfter('buildHealthCheck')
-    tasks.findByName('build').mustRunAfter('clean')
+    def cleanTask = tasks.findByName('clean')
+    def buildTask = tasks.findByName('build')
+    
+    if (cleanTask != null && buildTask != null) {
+        cleanTask.mustRunAfter('buildHealthCheck')
+        buildTask.mustRunAfter('clean')
+    }
     
     doLast {
         println "\n========================================="
