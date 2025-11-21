@@ -98,7 +98,7 @@ Kapsamlı bir doğrulama yapar:
 ## Avantajlar
 
 1. **Erken Tespit**: Sorunlar commit edilir edilmez tespit edilir
-2. **Otomasyno**: Manuel kontrol gerekmez, her şey otomatik
+2. **Otomasyon**: Manuel kontrol gerekmez, her şey otomatik
 3. **Şeffaflık**: Build durumu ve raporlar herkese açık
 4. **Kalite Güvencesi**: Her değişiklik build ve test sürecinden geçer
 5. **Dokümantasyon**: Build sürecinin detaylı kaydı tutulur
