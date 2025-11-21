@@ -64,13 +64,15 @@ tasks.register('verifyDependencies') {
         println "========================================="
         
         def allResolved = true
+        def configsToCheck = ['implementation', 'testImplementation', 'androidTestImplementation']
         
         subprojects.each { subproject ->
             println "\nChecking dependencies for: ${subproject.name}"
             
             try {
                 subproject.configurations.each { config ->
-                    if (config.canBeResolved) {
+                    // Only check essential configurations to improve performance
+                    if (config.canBeResolved && (configsToCheck.contains(config.name) || config.name.endsWith('RuntimeClasspath'))) {
                         config.resolve()
                     }
                 }
@@ -85,6 +87,7 @@ tasks.register('verifyDependencies') {
             println "\n✅ All dependencies verified successfully!"
         } else {
             println "\n⚠️  Some dependencies could not be resolved"
+            throw new GradleException("Dependency verification failed")
         }
         println "=========================================\n"
     }
@@ -95,7 +98,13 @@ tasks.register('fullBuildVerification') {
     group = 'verification'
     description = 'Runs complete build verification including health check, dependency verification, lint, and tests'
     
-    dependsOn 'buildHealthCheck', 'clean', 'build'
+    dependsOn 'buildHealthCheck'
+    dependsOn 'clean'
+    dependsOn 'build'
+    
+    // Ensure proper execution order
+    tasks.findByName('clean').mustRunAfter('buildHealthCheck')
+    tasks.findByName('build').mustRunAfter('clean')
     
     doLast {
         println "\n========================================="

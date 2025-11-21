@@ -30,11 +30,9 @@ jobs:
       
     - name: Run Build Health Check
       run: ./gradlew buildHealthCheck
-      continue-on-error: true
       
     - name: Verify Dependencies
       run: ./gradlew verifyDependencies
-      continue-on-error: true
       
     - name: Run Lint
       run: ./gradlew lint
