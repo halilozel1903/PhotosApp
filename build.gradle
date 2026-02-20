@@ -1,15 +1,10 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:8.6.1'
-        classpath 'com.google.dagger:hilt-android-gradle-plugin:2.52'
-    }
+plugins {
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.hilt.android) apply false
+    alias(libs.plugins.versions)
 }
+
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 allprojects {
     repositories {
@@ -122,5 +117,17 @@ tasks.register('fullBuildVerification') {
         println "========================================="
         println "All checks passed successfully!"
         println "=========================================\n"
+    }
+}
+
+dependencyUpdates {
+    def isNonStable = { String version ->
+        def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { version.toUpperCase().contains(it) }
+        def stableRegex = /^[0-9,.v-]+(-r)?$/
+        return !stableKeyword && !(version ==~ stableRegex)
+    }
+
+    rejectVersionIf {
+        isNonStable(it.candidate.version) && !isNonStable(it.currentVersion)
     }
 }
