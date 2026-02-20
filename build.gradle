@@ -14,7 +14,7 @@ allprojects {
 }
 
 tasks.register('clean', Delete) {
-    delete rootProject.buildDir
+    delete getLayout().getBuildDirectory()
 }
 
 // Build verification task - to check if build is healthy
